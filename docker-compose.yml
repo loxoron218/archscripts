@@ -131,6 +131,18 @@ services:
       - 443:443
     restart: unless-stopped
 ---
+services:
+  app:
+    image: 'docker.io/jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '90:90'
+      - '81:81'
+      - '403:403'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+---
 services:    
   radarr:
     image: lscr.io/linuxserver/radarr:nightly
