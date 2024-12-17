@@ -1,4 +1,4 @@
-## This installation script sets up various services for a home server using Docker Compose (Homarr, Immich, Nextcloud, Vaultwarden, Jellyfin, Radarr, Sabnzbd and Jackett).
+## This installation script sets up various services for a home server using Docker Compose (Homarr. Immich, Nextcloud, Vaultwarden, Jellyfin, Radarr, Sabnzbd, Jackett and Nginx Proxy Manager).
 ## Ensure that this file is placed in the same folder as the .env and other .yml files for Immich to work correctly.
 services:
   homarr:
