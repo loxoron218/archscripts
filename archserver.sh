@@ -32,9 +32,9 @@ read -p "Enter your Duck DNS domain: " duck_domain
 read -p "Enter your Duck DNS token: " duck_token
 
 ## Configure Duck DNS
-mkdir ~/.duckdns
-echo "echo url=\"https://www.duckdns.org/update?domains=${duck_domain}&token=${duck_token}&ip=&verbose=true\" | curl -k -o ~/.duckdns/duck.log -K -" > ~/.duckdns/duck.sh
-chmod 700 ~/.duckdns/duck.sh
+mkdir ~/duckdns
+echo "echo url=\"https://www.duckdns.org/update?domains=${duck_domain}&token=${duck_token}&ip=&verbose=true\" | curl -k -o ~/duckdns/duck.log -K -" > ~/duckdns/duck.sh
+chmod 700 ~/duckdns/duck.sh
 echo "*/5 * * * * ~/duckdns/duck.sh >/dev/null 2>&1" | crontab -
 sudo systemctl enable cronie.service
 
