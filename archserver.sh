@@ -27,7 +27,7 @@ fastfetch --gen-config
 sh -c 'echo "fastfetch" >> ~/.bashrc'
 alias clearfast='clear && fastfetch'
 
-## Prompt for Duck DNS domain and token
+## Set Duck DNS domain and token
 read -p "Enter your Duck DNS domain: " duck_domain
 read -p "Enter your Duck DNS token: " duck_token
 
