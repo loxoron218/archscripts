@@ -270,8 +270,8 @@ services:
 sudo docker compose -f ~/docker-compose/docker-compose.yml up -d )
 
 ## Update
-sudo powertop --auto-tune
 yay -Rnsu git
 yay -Yc
 sudo pacman -Scc
 yay -Syyu
+sudo powertop --auto-tune
