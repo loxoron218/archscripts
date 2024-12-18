@@ -27,7 +27,7 @@ services:
       - '2283:2283' 
     restart: unless-stopped 
     extends: # Uncomment this section for hardware acceleration - see https://immich.app/docs/features/hardware-transcoding
-      file: hwaccel.transcoding.yml # https://immich.app/docs/features/hardware-transcoding
+      file: hwaccel.transcoding.yml # Uncomment this section for hardware acceleration - see https://immich.app/docs/features/hardware-transcoding
       service: quicksync # Set to one of [nvenc, quicksync, rkmpp, vaapi, vaapi-wsl] for accelerated transcoding, uncomment this section for hardware acceleration - see https://immich.app/docs/features/hardware-transcoding
     env_file:
       - .env
