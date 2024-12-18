@@ -27,3 +27,9 @@ sudo curl -o /usr/share/pixmaps/logo-arrow.svg https://raw.githubusercontent.com
 sudo cp /usr/lib/sabnzbd/linux/sabnzbd.desktop ~/.local/share/applications/
 sudo sed -i 's|^Exec=.*|Exec=/usr/lib/sabnzbd/SABnzbd.py --browser 1|' ~/.local/share/applications/sabnzbd.desktop
 sudo sed -i 's|^Icon=.*|Icon=/usr/share/pixmaps/logo-arrow.svg|' ~/.local/share/applications/sabnzbd.desktop
+
+## Select best mirrors
+sudo pacman -Syyu
+sudo pacman -S reflector
+sudo reflector -c DE -l 10 -p https --save /etc/pacman.d/mirrorlist
+sudo pacman -Rnsu reflector
