@@ -61,6 +61,7 @@ sudo firewall-cmd --reload
 sudo systemctl enable docker.service
 sudo systemctl start docker.service
 mkdir ~/docker-compose
+read -s -p "Enter your Immich database password: " DB_PASSWORD
 echo "# You can find documentation for all the supported env variables at https://immich.app/docs/install/environment-variables
 
 # The location where your uploaded files are stored
@@ -76,7 +77,7 @@ IMMICH_VERSION=release
 
 # Connection secret for postgres. You should change it to a random password
 # Please use only the characters `A-Za-z0-9`, without special characters or spaces
-DB_PASSWORD=postgres
+DB_PASSWORD=${DB_PASSWORD}
 
 # The values below this line do not need to be changed
 ###################################################################################
