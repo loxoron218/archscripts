@@ -18,16 +18,21 @@ git clone https://aur.archlinux.org/yay.git
 sudo rm -rf ~/yay
 
 ## Install and configure DE
-sudo pacman -S gdm network-manager-applet plymouth
+yay -S gdm plymouth
 gsettings set org.gnome.mutter experimental-features "['autoclose-xwayland' , 'kms-modifiers' , 'scale-monitor-framebuffer' , 'variable-refresh-rate' , 'xwayland-native-scaling']"
-sudo sed -i 's/#AutoEnable=true/AutoEnable=false/' /etc/bluetooth/main.conf
-sudo systemctl enable bluetooth.service
 sudo systemctl enable gdm.service
 sudo systemctl set-default graphical.target
-sudo systemctl enable NetworkManager.service
 sudo sed -i 's/^HOOKS=(/HOOKS=(plymouth /' /etc/mkinitcpio.conf
 sudo plymouth-set-default-theme -R bgrt
 sudo sed -i 's/$/ quiet splash/' /boot/loader/entries/*.conf
+
+## Install and configure network
+yay -S network-manager-applet
+sudo systemctl enable NetworkManager.service
+
+## Install and configure Bluetooth
+sudo sed -i 's/#AutoEnable=true/AutoEnable=false/' /etc/bluetooth/main.conf
+sudo systemctl enable bluetooth.service
 
 ## Install other applications
 sudo pacman -S audacity bleachbit dconf-editor evince fastfetch gnome-calculator gnome-control-center gnome-disk-utility gnome-software gnome-text-editor gnome-tweaks libreoffice-fresh nautilus pdfarranger picard soundconverter strawberry vlc
@@ -53,16 +58,18 @@ echo "NoDisplay=true" | sudo tee ~/.local/share/applications/org.gnome.Extension
 echo "NoDisplay=true" | sudo tee ~/.local/share/applications/qv4l2.desktop qv4l2.desktop
 echo "NoDisplay=true" | sudo tee ~/.local/share/applications/qvidcap.desktop qvidcap.desktop
 
-## Configure system apps
+## Configure printer
+sudo systemctl enable cups.service
+sudo lpadmin -p HLL2350DW -v lpd://192.168.178.67/BINARY_P1 -E
+sudo lpoptions -d HLL2350DW
+
+## Configure other apps
 fastfetch --gen-config
 sudo sh -c 'echo "fastfetch" >> ~/.bashrc'
 alias clearfast='clear && fastfetch'
 gsettings set com.github.stunkymonkey.nautilus-open-any-terminal terminal blackbox
 gsettings set org.gnome.desktop.privacy remember-recent-files false
 gsettings set org.gnome.nautilus.preferences show-image-thumbnails 'always'
-sudo systemctl enable cups.service
-sudo lpadmin -p HLL2350DW -v lpd://192.168.178.67/BINARY_P1 -E
-sudo lpoptions -d HLL2350DW
 
 ## Update
 yay -Rnsu git powertop
