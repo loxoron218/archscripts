@@ -1,14 +1,16 @@
 ## This installation script sets up various services for a home server using Docker Compose (Homarr, Immich, Nextcloud, Vaultwarden, Jellyfin, Jackett, Radarr, Sabnzbd and Nginx Proxy Manager)
+## I took a combination of linuxserver.io and official Docker containers. Then edited the 'restart' settings for all to have the same policy and sorted all sections to "harmonize" the file.
 ## Ensure that this file is placed in the same folder as the .env and other .yml files for Immich to work correctly.
+
 services:
   homarr:
     image: ghcr.io/ajnart/homarr:latest
     container_name: homarr
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
-      - ~/homarr/configs:/app/data/configs
-      - ~/homarr/icons:/app/public/icons
-      - ~/homarr/data:/data
+      - ~/docker-compose/homarr/configs:/app/data/configs
+      - ~/docker-compose/homarr/icons:/app/public/icons
+      - ~/docker-compose/homarr/data:/data
     ports:
       - '7575:7575'
     restart: unless-stopped
@@ -24,9 +26,9 @@ services:
     ports:
       - '2283:2283' 
     restart: unless-stopped 
-    extends:
-      file: hwaccel.transcoding.yml
-      service: quicksync # set to one of [nvenc, quicksync, rkmpp, vaapi, vaapi-wsl] for accelerated transcoding
+    extends: # Uncomment this section for hardware acceleration - see https://immich.app/docs/features/hardware-transcoding
+      file: hwaccel.transcoding.yml # https://immich.app/docs/features/hardware-transcoding
+      service: quicksync # Set to one of [nvenc, quicksync, rkmpp, vaapi, vaapi-wsl] for accelerated transcoding, uncomment this section for hardware acceleration - see https://immich.app/docs/features/hardware-transcoding
     env_file:
       - .env
     depends_on:
@@ -42,9 +44,9 @@ services:
     volumes:
       - model-cache:/cache
     restart: unless-stopped
-    extends: # uncomment this section for hardware acceleration - see https://immich.app/docs/features/ml-hardware-acceleration
-      file: hwaccel.ml.yml
-      service: openvino # set to one of [armnn, cuda, openvino, openvino-wsl] for accelerated inference - use the `-wsl` version for WSL2 where applicable
+    extends: # Uncomment this section for hardware acceleration - see https://immich.app/docs/features/ml-hardware-acceleration
+      file: hwaccel.ml.yml # Uncomment this section for hardware acceleration - see https://immich.app/docs/features/ml-hardware-acceleration
+      service: openvino # Set to one of [armnn, cuda, openvino, openvino-wsl] for accelerated inference - use the `-wsl` version for WSL2 where applicable, uncomment this section for hardware acceleration - see https://immich.app/docs/features/ml-hardware-acceleration
     env_file:
       - .env
 ---
@@ -86,8 +88,8 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      - AUTO_UPDATE=true #optional
-      - RUN_OPTS= #optional
+      - AUTO_UPDATE=true # Optional
+      - RUN_OPTS= # Optional
     volumes:
       - ~/docker-compose/jackett/data:/config
       - ~/docker-compose/blackhole:/downloads
@@ -103,16 +105,16 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      - JELLYFIN_PublishedServerUrl=http://192.168.0.5 #optional
+      - JELLYFIN_PublishedServerUrl=http://192.168.0.5 # Optional
     volumes:
       - ~/docker-compose/jellyfin/library:/config
       - ~/docker-compose/tvseries:/data/tvshows
       - ~/docker-compose/movies:/data/movies
     ports:
       - 8096:8096
-      - 8920:8920 #optional
-      - 7359:7359/udp #optional
-      - 1900:1900/udp #optional
+      - 8920:8920 # Optional
+      - 7359:7359/udp # Optional
+      - 1900:1900/udp # Optional
     restart: unless-stopped
 ---
 services:    
@@ -135,11 +137,11 @@ services:
     image: 'docker.io/jc21/nginx-proxy-manager:latest'
     volumes:
       - data:/data
-      - ~/letsencrypt:/etc/letsencrypt
+      - ~/docker-compose/letsencrypt:/etc/letsencrypt
     ports:
-      - '90:90'
+      - '90:90' # Changed the port to avoid conflict with Vaultwarden
       - '81:81'
-      - '403:403'
+      - '403:403' # Changed the port to avoid conflict with Nextcloud
     restart: unless-stopped
 ---
 services:    
@@ -152,8 +154,8 @@ services:
       - TZ=Etc/UTC
     volumes:
       - ~/docker-compose/radarr/data:/config
-      - ~/docker-compose/movies:/movies #optional
-      - ~/docker-compose/download-client-downloads:/downloads #optional
+      - ~/docker-compose/movies:/movies # Optional
+      - ~/docker-compose/download-client-downloads:/downloads # Optional
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -168,8 +170,8 @@ services:
       - TZ=Etc/UTC
     volumes:
       - ~/docker-compose/sabnzbd/config:/config
-      - ~/docker-compose/downloads:/downloads #optional
-      - ~/docker-compose/incomplete/downloads:/incomplete-downloads #optional
+      - ~/docker-compose/downloads:/downloads # Optional
+      - ~/docker-compose/incomplete/downloads:/incomplete-downloads # Optional
     ports:
       - 8080:8080
     restart: unless-stopped
@@ -178,8 +180,10 @@ services:
   vaultwarden:
     image: vaultwarden/server:testing
     container_name: vaultwarden
+    # environment:
+      # DOMAIN: "https://vw.domain.tld" # Enable if you want to use your own domain
     volumes:
-      - ~/vw-data/:/data/
+      - ~/docker-compose/vw-data/:/data/
     ports:
       - 80:80
     restart: unless-stopped
