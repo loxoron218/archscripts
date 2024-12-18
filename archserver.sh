@@ -60,10 +60,10 @@ sudo firewall-cmd --reload
 ## Configure Docker
 sudo systemctl enable docker.service
 sudo systemctl start docker.service
-mkdir ~/.docker-compose
-curl -L -o ~/.docker-compose/.env https://github.com/immich-app/immich/releases/latest/download/example.env
-curl -L -o ~/.docker-compose/hwaccel.transcoding.yml https://github.com/immich-app/immich/releases/latest/download/hwaccel.transcoding.yml
-curl -L -o ~/.docker-compose/hwaccel.ml.yml https://github.com/immich-app/immich/releases/latest/download/hwaccel.ml.yml
+mkdir ~/docker-compose
+curl -L -o ~/docker-compose/.env https://github.com/immich-app/immich/releases/latest/download/example.env
+curl -L -o ~/docker-compose/hwaccel.transcoding.yml https://github.com/immich-app/immich/releases/latest/download/hwaccel.transcoding.yml
+curl -L -o ~/docker-compose/hwaccel.ml.yml https://github.com/immich-app/immich/releases/latest/download/hwaccel.ml.yml
 echo "## This installation script sets up various services for a home server using Docker Compose (Homarr, Immich, Nextcloud, Vaultwarden, Jellyfin, Jackett, Radarr, Sabnzbd and Nginx Proxy Manager)
 ## I took a combination of linuxserver.io and official Docker containers. Then edited the 'restart' settings for all to have the same policy and sorted all sections to "harmonize" the file.
 ## Ensure that this file is placed in the same folder as the .env and other .yml files for Immich to work correctly.
