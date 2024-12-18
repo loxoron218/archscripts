@@ -39,7 +39,7 @@ echo "*/5 * * * * ~/duckdns/duck.sh >/dev/null 2>&1" | crontab -
 sudo systemctl enable cronie.service
 
 ## Configure SSH
-blocked_ports=("7575" "2283" "9117" "8096" "8920" "7359" "1900" "443" "90" "81" "403" "7878" "8080" "80")
+blocked_ports=("80" "81" "90" "403" "443" "1900" "2283" "7359" "7575" "7878" "8080" "8096" "8920" "9117")
 while true; do
     random_port=$(shuf -i 1000-9999 -n 1)
     
