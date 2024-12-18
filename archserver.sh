@@ -19,7 +19,7 @@ sudo rm -rf ~/yay
 
 ## Install applications
 yay -S cronie dhcpcd docker docker-compose firewalld openssh powertop
-yay -S bash-completion fastfetch makemkv qbittorrent-nox soundconverter
+yay -S bash-completion fastfetch qbittorrent-nox soundconverter
 
 ## Configure system apps
 sudo systemctl enable dhcpcd.service
@@ -39,7 +39,7 @@ echo "*/5 * * * * ~/duckdns/duck.sh >/dev/null 2>&1" | crontab -
 sudo systemctl enable cronie.service
 
 ## Configure SSH
-blocked_ports=("80" "81" "90" "403" "443" "1900" "2283" "7359" "7575" "7878" "8080" "8096" "8920" "9117")
+blocked_ports=("80" "81" "90" "403" "443" "1900" "2283" "5800" "7359" "7575" "7878" "8080" "8096" "8920" "9117")
 while true; do
     random_port=$(shuf -i 1000-9999 -n 1)
     
@@ -198,6 +198,20 @@ services:
       - 8920:8920
       - 7359:7359/udp
       - 1900:1900/udp
+    restart: unless-stopped
+---
+services:
+  makemkv:
+    image: jlesage/makemkv
+    volumes:
+      - "~/docker-compose/docker/appdata/makemkv:/config:rw"
+      - "~/docker-compose:/storage:ro"
+      - "~/docker-compose:/output:rw"
+    ports:
+      - "5800:5800"
+    devices:
+      - "/dev/sr0:/dev/sr0"
+      - "/dev/sg2:/dev/sg2"
     restart: unless-stopped
 ---
 services:
