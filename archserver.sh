@@ -15,7 +15,6 @@ sudo sh -c 'echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf'
 sudo pacman -S git
 git clone https://aur.archlinux.org/yay.git
 ( cd yay && makepkg -si )
-yay -Rnsu git
 sudo rm -rf ~/yay
 
 ## Install applications
@@ -252,6 +251,7 @@ sudo docker compose -f ~/docker-compose/docker-compose.yml up -d )
 
 ## Update
 sudo powertop --auto-tune
+yay -Rnsu git
 yay -Yc
 sudo pacman -Scc
 yay -Syyu
