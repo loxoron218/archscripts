@@ -61,7 +61,27 @@ sudo firewall-cmd --reload
 sudo systemctl enable docker.service
 sudo systemctl start docker.service
 mkdir ~/docker-compose
-curl -L -o ~/docker-compose/.env https://github.com/immich-app/immich/releases/latest/download/example.env
+echo "# You can find documentation for all the supported env variables at https://immich.app/docs/install/environment-variables
+
+# The location where your uploaded files are stored
+UPLOAD_LOCATION=~/docker-compose/immich-app/library
+# The location where your database files are stored
+DB_DATA_LOCATION=~/docker-compose/immich-app/postgres
+
+# To set a timezone, uncomment the next line and change Etc/UTC to a TZ identifier from this list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List
+# TZ=Etc/UTC
+
+# The Immich version to use. You can pin this to a specific version like "v1.71.0"
+IMMICH_VERSION=release
+
+# Connection secret for postgres. You should change it to a random password
+# Please use only the characters `A-Za-z0-9`, without special characters or spaces
+DB_PASSWORD=postgres
+
+# The values below this line do not need to be changed
+###################################################################################
+DB_USERNAME=postgres
+DB_DATABASE_NAME=immich" > ~/docker-compose/.env
 curl -L -o ~/docker-compose/hwaccel.transcoding.yml https://github.com/immich-app/immich/releases/latest/download/hwaccel.transcoding.yml
 curl -L -o ~/docker-compose/hwaccel.ml.yml https://github.com/immich-app/immich/releases/latest/download/hwaccel.ml.yml
 echo "## This installation script sets up various services for a home server using Docker Compose (Homarr, Immich, Nextcloud, Vaultwarden, Jellyfin, Jackett, Radarr, Sabnzbd and Nginx Proxy Manager)
