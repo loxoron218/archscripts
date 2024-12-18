@@ -19,7 +19,7 @@ sudo rm -rf ~/yay
 
 ## Install applications
 yay -S cronie dhcpcd docker docker-compose firewalld openssh powertop
-yay -S bash-completion fastfetch qbittorrent-nox soundconverter
+yay -S bash-completion fastfetch soundconverter
 
 ## Configure system apps
 sudo systemctl enable dhcpcd.service
@@ -39,7 +39,7 @@ echo "*/5 * * * * ~/duckdns/duck.sh >/dev/null 2>&1" | crontab -
 sudo systemctl enable cronie.service
 
 ## Configure SSH
-blocked_ports=("80" "81" "90" "403" "443" "1900" "2283" "5800" "7359" "7575" "7878" "8080" "8096" "8920" "9117")
+blocked_ports=("80" "81" "90" "403" "443" "1900" "2283" "5800" "6881" "7359" "7575" "7878" "8080" "8096" "8282" "8920" "9117")
 while true; do
     random_port=$(shuf -i 1000-9999 -n 1)
     
@@ -236,9 +236,28 @@ services:
       - data:/data
       - ~/docker-compose/letsencrypt:/etc/letsencrypt
     ports:
-      - '90:90'
+      - '90:90' # Changed it to avoid conflict with Vaultwarden
       - '81:81'
-      - '403:403'
+      - '403:403' # Changed it to avoid conflict with Nextcloud
+    restart: unless-stopped
+---
+services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - WEBUI_PORT=8282 # Changed it to avoid conflict with SABnzbd
+      - TORRENTING_PORT=6881
+    volumes:
+      - ~/docker-compose/qbittorrent/appdata:/config
+      - ~/docker-compose/downloads:/downloads #optional
+    ports:
+      - 8282:8282 # Changed it to avoid conflict with SABnzbd
+      - 6881:6881
+      - 6881:6881/udp
     restart: unless-stopped
 ---
 services:
