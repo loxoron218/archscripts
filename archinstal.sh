@@ -37,7 +37,7 @@ yay -S brother-hll2350dw dcraw-thumbnailer ffmpeg-audio-thumbnailer firefox-arke
 flatpak update
 flatpak install -y adw-gtk3-dark winezgui
 
-## Hide unwanted icons
+## Hide unwanted desktop icons
 echo "NoDisplay=true" | sudo tee ~/.local/share/applications/avahi-discover.desktop
 echo "NoDisplay=true" | sudo tee ~/.local/share/applications/bssh.desktop bssh.desktop
 echo "NoDisplay=true" | sudo tee ~/.local/share/applications/bvnc.desktop bvnc.desktop
