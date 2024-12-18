@@ -22,6 +22,7 @@ Collection of scripts to configure my Linux system. Arch BTW.
 6.  MakeMKV Docker Github Repository: https://github.com/jlesage/docker-makemkv
 7.  LinuxServer.io Docker Image for Nextcloud: https://docs.linuxserver.io/images/docker-nextcloud/
 8.  Nginx Proxy Manager GitHub Repository: https://github.com/NginxProxyManager/nginx-proxy-manager
-9.  LinuxServer.io Docker Image for Radarr: https://docs.linuxserver.io/images/docker-radarr/
-10.  LinuxServer.io Docker Image for SABnzbd: https://docs.linuxserver.io/images/docker-sabnzbd/
-11.  Vaultwarden GitHub Repository: https://github.com/dani-garcia/vaultwarden
+9.  LinuxServer.io Docker Image for qBittorrent: https://docs.linuxserver.io/images/docker-qbittorrent/
+10.  LinuxServer.io Docker Image for Radarr: https://docs.linuxserver.io/images/docker-radarr/
+11.  LinuxServer.io Docker Image for SABnzbd: https://docs.linuxserver.io/images/docker-sabnzbd/
+12.  Vaultwarden GitHub Repository: https://github.com/dani-garcia/vaultwarden
