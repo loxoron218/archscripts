@@ -12,6 +12,7 @@ sudo sh -c 'echo "[kde-unstable]" >> /etc/pacman.conf'
 sudo sh -c 'echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf'
 
 ## Install yay
+sudo pacman -Syyu
 sudo pacman -S git
 git clone https://aur.archlinux.org/yay.git
 ( cd yay && makepkg -si )
