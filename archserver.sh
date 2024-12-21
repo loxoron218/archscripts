@@ -302,7 +302,7 @@ services:
     ports:
       - 80:80
     restart: unless-stopped" > ~/docker-compose/docker-compose.yml
-sudo docker compose -f ~/docker-compose/docker-compose.yml up -d )
+sudo docker compose -f ~/docker-compose/docker-compose.yml up -d
 
 ## Update
 yay -Rnsu git
