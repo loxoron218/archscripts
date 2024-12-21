@@ -20,7 +20,7 @@ sudo rm -rf ~/yay
 
 ## Install applications
 yay -S cronie dhcpcd docker docker-compose firewalld openssh powertop
-yay -S bash-completion fastfetch soundconverter
+yay -S bash-completion fastfetch
 
 ## Configure system apps
 sudo systemctl enable dhcpcd.service
