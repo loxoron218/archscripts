@@ -37,7 +37,7 @@ sudo systemctl enable bluetooth.service
 ## Install other applications
 sudo pacman -S audacity bleachbit dconf-editor evince fastfetch gnome-calculator gnome-control-center gnome-disk-utility gnome-software gnome-text-editor gnome-tweaks libreoffice-fresh nautilus pdfarranger picard soundconverter strawberry vlc
 sudo pacman -S adw-gtk-theme bash-completion firefox-ublock-origin ffmpegthumbnailer gnome-shell-extension-appindicator gvfs-mtp kdegraphics-thumbnailers power-profiles-daemon powertop ttf-liberation xdg-user-dirs
-yay -S blackbox-terminal extension-manager flatseal localsend-bin makemkv mission-center nuclear-player-bin whatsapp-for-linux
+yay -S blackbox-terminal extension-manager flatseal localsend-bin mission-center nuclear-player-bin whatsapp-for-linux
 yay -S brother-hll2350dw dcraw-thumbnailer ffmpeg-audio-thumbnailer firefox-arkenfox-autoconfig firefox-extension-bitwarden gnome-shell-extension-bing-wallpaper gnome-shell-extension-blur-my-shell nautilus-open-any-terminal
 flatpak update
 flatpak install -y adw-gtk3-dark winezgui
