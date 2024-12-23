@@ -2,20 +2,19 @@
 # SECTION 1: System Preparation
 #==============================================================================
 
-## Buffer sudo for the whole script
-sudo -v
-while true; do sudo -v; sleep 60; done &
-
 ## Configure drives
+sudo mkdir /mnt/sda1
+sudo mount /dev/sda1 /mnt/sda1 # Drive shouldn't contain a folder named /server_backup to avoid conflict
 sudo sh -c 'echo "/dev/sda1 /mnt/sda1 ext4 defaults 0 2" >> /etc/fstab'
 sudo systemctl daemon-reload
 
 ## Configure RAID
 # sudo pacman -Syyu --noconfirm mdadm
-# sudo wipefs --all /dev/sda
-# sudo wipefs --all /dev/sdb # Add more if you have more drives
+# sudo wipefs --all /dev/sda /dev/sdb # Add more if you have more drives
+# sudo mkdir /dev/md0
 # sudo mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sda /dev/sdb # Add more if you have more drives
 # sudo mkfs.ext4 /dev/md0
+# sudo mount /dev/md0 /mnt/raid
 # sudo sh -c 'echo "/dev/md0 /mnt/raid ext4 defaults 0 2" >> /etc/fstab'
 # sudo mdadm --detail --scan >> /etc/mdadm.conf
 # sudo mkinitcpio -P
@@ -279,9 +278,9 @@ services:
       - ~/server/makemkv:/output:rw
     ports:
       - 5800:5800
-  # devices: # Uncomment if you have optical drives
-      # - /dev/sr0:/dev/sr0 # Uncomment if you have optical drives
-      # - /dev/sg2:/dev/sg2 # Uncomment if you have optical drives
+    devices: # Uncomment if you have optical drives
+      - /dev/sr0:/dev/sr0 # Uncomment if you have optical drives
+      - /dev/sg2:/dev/sg2 # Uncomment if you have optical drives
     restart: unless-stopped
 ---
 services:
@@ -388,13 +387,10 @@ sudo docker compose -f ~/server/immich/docker-compose.yml up -d
 #==============================================================================
 
 ## Setup backup
-cat << EOF > ~/server/backup_server.sh
-sudo btrfs subvolume snapshot ~/server ~/server_snapshot
-rsync -avh --delete ~/server_snapshot /mnt/sda1/server_backup/ # Change to /mnt/raid/server_backup/ if you have RAID
-sudo btrfs subvolume delete ~/server_snapshot
-EOF
-chmod +x ~/server/backup_server.sh
-(crontab -l 2>/dev/null; echo "0 3 * * * /home/your_username/backup_server_btrfs.sh") | crontab -
+sudo chown -R $(whoami) /mnt/sda1 # Change directory if you are using RAID
+echo "rsync -avh --delete ~/server /mnt/sda1/server_backup/" > ~/server/backup_server.sh # Change directory if you are using RAID
+chmod +x ~/server/backup_server.sh  
+(crontab -l 2>/dev/null; echo "0 3 * * * ~/server/backup_server.sh") | crontab -
 ~/server/backup_server.sh
 
 #==============================================================================
@@ -409,9 +405,6 @@ sudo pacman -Scc --noconfirm
 yay -Syyu --noconfirm
 sudo powertop --calibrate
 sudo powertop --auto-tune
-
-## Stop sudo buffer
-pkill -f "sudo -v"
 
 ## Remember SSH port
 echo -e "Your SSH port is: $random_port"
