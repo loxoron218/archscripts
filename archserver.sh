@@ -389,8 +389,6 @@ sudo docker compose -f ~/server/immich/docker-compose.yml up -d
 
 ## Setup backup
 cat << EOF > ~/server/backup_server.sh
-#!/bin/bash
-
 sudo btrfs subvolume snapshot ~/server ~/server_snapshot
 rsync -avh --delete ~/server_snapshot /mnt/sda1/server_backup/ # Change to /mnt/raid/server_backup/ if you have RAID
 sudo btrfs subvolume delete ~/server_snapshot
