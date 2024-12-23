@@ -7,7 +7,7 @@ sudo -v
 while true; do sudo -v; sleep 60; done &
 
 ## Configure drives
-sudo sh -c 'echo "/dev/sda1   /mnt/sda1   ext4   defaults   0   2" >> /etc/fstab'
+sudo sh -c 'echo "/dev/sda1 /mnt/sda1 ext4 defaults 0 2" >> /etc/fstab'
 sudo systemctl daemon-reload
 
 ## Configure RAID
@@ -16,7 +16,7 @@ sudo systemctl daemon-reload
 # sudo wipefs --all /dev/sdb # Add more if you have more drives
 # sudo mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sda /dev/sdb # Add more if you have more drives
 # sudo mkfs.ext4 /dev/md0
-# sudo sh -c 'echo "/dev/md0 /mnt/raid ext4 defaults 0 0" >> /etc/fstab'
+# sudo sh -c 'echo "/dev/md0 /mnt/raid ext4 defaults 0 2" >> /etc/fstab'
 # sudo mdadm --detail --scan >> /etc/mdadm.conf
 # sudo mkinitcpio -P
 
@@ -46,7 +46,7 @@ sudo rm -rf ~/yay
 #==============================================================================
 
 ## Install necessary applilcations
-yay -S --noconfirm cronie dhcpcd docker docker-compose firewalld openssh # Install networkmanager to manage Wi-Fi connections
+yay -S --noconfirm cronie dhcpcd docker docker-compose firewalld openssh rsync # Install networkmanager to manage Wi-Fi connections
 
 ## Install recommended applications
 yay -S --noconfirm bash-completion fastfetch nano powertop xorg-xset
@@ -384,7 +384,23 @@ EOF
 sudo docker compose -f ~/server/immich/docker-compose.yml up -d
 
 #==============================================================================
-# SECTION 7: Cleanup
+# SECTION 7: Backup creation
+#==============================================================================
+
+## Setup backup
+cat << EOF > ~/server/backup_server.sh
+#!/bin/bash
+
+sudo btrfs subvolume snapshot ~/server ~/server_snapshot
+rsync -avh --delete ~/server_snapshot /mnt/sda1/server_backup/ # Change to /mnt/raid/server_backup/ if you have RAID
+sudo btrfs subvolume delete ~/server_snapshot
+EOF
+chmod +x ~/server/backup_server.sh
+(crontab -l 2>/dev/null; echo "0 3 * * * /home/your_username/backup_server_btrfs.sh") | crontab -
+~/server/backup_server.sh
+
+#==============================================================================
+# SECTION 8: Cleanup
 #==============================================================================
 
 ## Remove unnecessary files
