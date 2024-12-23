@@ -8,10 +8,17 @@ while true; do sudo -v; sleep 60; done &
 
 ## Configure drives
 sudo sh -c 'echo "/dev/sda1   /mnt/sda1   ext4   defaults   0   2" >> /etc/fstab'
-# sudo sh -c 'echo "/dev/sdb1   /mnt/sdb1   ext4   defaults   0   2" >> /etc/fstab' # Add more drives if necessary
-# sudo sh -c 'echo "/dev/sdc1   /mnt/sdc1   ext4   defaults   0   2" >> /etc/fstab' # Add more drives if necessary
-# sudo sh -c 'echo "/dev/sdd1   /mnt/sdd1   ext4   defaults   0   2" >> /etc/fstab' # Add more drives if necessary
 sudo systemctl daemon-reload
+
+## Configure RAID
+# sudo pacman -Syyu --noconfirm mdadm
+# sudo wipefs --all /dev/sda
+# sudo wipefs --all /dev/sdb # Add more if you have more drives
+# sudo mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sda /dev/sdb # Add more if you have more drives
+# sudo mkfs.ext4 /dev/md0
+# sudo sh -c 'echo "/dev/md0 /mnt/raid ext4 defaults 0 0" >> /etc/fstab'
+# sudo mdadm --detail --scan >> /etc/mdadm.conf
+# sudo mkinitcpio -P
 
 ## Configure pacman
 sudo sed -i 's/#Color/Color/' /etc/pacman.conf
@@ -29,8 +36,7 @@ Include = /etc/pacman.d/mirrorlist
 EOF'
 
 ## Install yay
-sudo pacman -Syyu --noconfirm
-sudo pacman -S --noconfirm git
+sudo pacman -Syyu --noconfirm git # Only run pacman -S if you installed mdadm
 git clone https://aur.archlinux.org/yay.git
 (cd yay && makepkg -si --noconfirm)
 sudo rm -rf ~/yay
