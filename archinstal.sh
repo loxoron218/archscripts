@@ -2,6 +2,10 @@
 # SECTION 1: System Preparation
 #==============================================================================
 
+## Buffer sudo for the whole script
+sudo -v
+while true; do sudo -v; sleep 60; done &
+
 ## Configure pacman
 sudo sed -i 's/#Color/Color/' /etc/pacman.conf
 sudo sed -i 's/#VerbosePkgLists/VerbosePkgLists/' /etc/pacman.conf
