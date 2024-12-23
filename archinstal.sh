@@ -56,7 +56,7 @@ sudo systemctl enable bluetooth.service
 #==============================================================================
 
 ## Install GUI applications from official repository
-sudo pacman -S --noconfirm audacity bleachbit dconf-editor evince fastfetch gnome-calculator gnome-control-center gnome-disk-utility gnome-software gnome-text-editor gnome-tweaks libreoffice-fresh nautilus pdfarranger picard soundconverter strawberry vlc
+sudo pacman -S --noconfirm audacity bleachbit dconf-editor evince fastfetch gnome-calculator gnome-control-center gnome-disk-utility gnome-software gnome-text-editor gnome-tweaks libreoffice-fresh nautilus nicotine+ pdfarranger picard soundconverter strawberry vlc
 
 ## Install terminal applications from official repository
 sudo pacman -S --noconfirm adw-gtk-theme bash-completion firefox-ublock-origin ffmpegthumbnailer gnome-shell-extension-appindicator gvfs-mtp kdegraphics-thumbnailers power-profiles-daemon powertop ttf-liberation xdg-user-dirs xorg-xset
