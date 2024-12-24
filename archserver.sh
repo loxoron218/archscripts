@@ -278,9 +278,9 @@ services:
       - ~/server/makemkv:/output:rw
     ports:
       - 5800:5800
-    devices: # Uncomment if you have optical drives
-      - /dev/sr0:/dev/sr0 # Uncomment if you have optical drives
-      - /dev/sg2:/dev/sg2 # Uncomment if you have optical drives
+    # devices: # Uncomment if you have optical drives
+      # - /dev/sr0:/dev/sr0 # Uncomment if you have optical drives
+      # - /dev/sg2:/dev/sg2 # Uncomment if you have optical drives
     restart: unless-stopped
 ---
 services:
@@ -400,6 +400,7 @@ chmod +x ~/server/backup_server.sh
 ## Remove unnecessary files
 yay -Yc --noconfirm
 sudo pacman -Scc --noconfirm
+sudo rm -rf ~/go
 
 ## Update system
 yay -Syyu --noconfirm
