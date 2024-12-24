@@ -4,7 +4,7 @@
 
 ## Configure drives
 sudo mkdir /mnt/sda1
-sudo mount /dev/sda1 /mnt/sda1 # Drive shouldn't contain a folder named /server_backup to avoid conflict
+sudo mount /dev/sda1 /mnt/sda1
 sudo sh -c 'echo "/dev/sda1 /mnt/sda1 ext4 defaults 0 2" >> /etc/fstab'
 sudo systemctl daemon-reload
 
@@ -387,6 +387,7 @@ sudo docker compose -f ~/server/immich/docker-compose.yml up -d
 #==============================================================================
 
 ## Setup backup
+sudo mkdir -p /mnt/sda1/server_backup
 sudo chown -R $(whoami) /mnt/sda1 # Change directory if you are using RAID
 echo "rsync -avh --delete ~/server /mnt/sda1/server_backup/" > ~/server/backup_server.sh # Change directory if you are using RAID
 chmod +x ~/server/backup_server.sh  
@@ -400,7 +401,8 @@ chmod +x ~/server/backup_server.sh
 ## Remove unnecessary files
 yay -Yc --noconfirm
 sudo pacman -Scc --noconfirm
-sudo rm -rf ~/go
+sudo rm -rf ~/.cache/go-build
+sudo rm -rf ~/.config/go
 
 ## Update system
 yay -Syyu --noconfirm
