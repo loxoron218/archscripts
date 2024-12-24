@@ -387,9 +387,8 @@ sudo docker compose -f ~/server/immich/docker-compose.yml up -d
 #==============================================================================
 
 ## Setup backup
-sudo mkdir -p /mnt/sda1/server_backup
 sudo chown -R $(whoami) /mnt/sda1 # Change directory if you are using RAID
-echo "rsync -avh --delete ~/server /mnt/sda1/server_backup/" > ~/server/backup_server.sh # Change directory if you are using RAID
+echo "rsync -avh --delete ~/server /mnt/sda1/" > ~/server/backup_server.sh # Change directory if you are using RAID
 chmod +x ~/server/backup_server.sh  
 (crontab -l 2>/dev/null; echo "0 3 * * * ~/server/backup_server.sh") | crontab -
 ~/server/backup_server.sh
