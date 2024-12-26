@@ -41,11 +41,7 @@ echo "alias clearfetch='clear && fastfetch'" >> ~/.bashrc
 source ~/.bashrc
 
 #==============================================================================
-# SECTION 3: Duck DNS Configuration
-#==============================================================================
-
-#==============================================================================
-# SECTION 4: SSH Configuration
+# SECTION 3: SSH Configuration
 #==============================================================================
 
 ## Set port for SSH
@@ -74,7 +70,7 @@ done
 sudo firewall-cmd --reload
 
 #==============================================================================
-# SECTION 5: Immich preparation
+# SECTION 4: Immich preparation
 #==============================================================================
 
 ## Set password for immich database
@@ -111,7 +107,7 @@ curl -L -o ~/Server/immich/hwaccel.transcoding.yml https://github.com/immich-app
 curl -L -o ~/Server/immich/hwaccel.ml.yml https://github.com/immich-app/immich/releases/latest/download/hwaccel.ml.yml
 
 #==============================================================================
-# SECTION 6: Docker configuration
+# SECTION 5: Docker configuration
 #==============================================================================
 
 ## Start Docker
@@ -360,7 +356,7 @@ EOF
 sudo docker compose -f ~/Server/immich/docker-compose.yml up -d
 
 #==============================================================================
-# SECTION 7: Backup creation
+# SECTION 6: Backup creation
 #==============================================================================
 
 ## Setup backup
@@ -372,7 +368,7 @@ sudo chown -R $(whoami) ~/Server
 ~/Server/server_backup.sh
 
 #==============================================================================
-# SECTION 8: Cleanup
+# SECTION 7: Cleanup
 #==============================================================================
 
 ## Remove unnecessary files
