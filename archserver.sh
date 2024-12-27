@@ -4,6 +4,7 @@
 
 ## Configure drive
 sudo mkdir /mnt/sda1
+sudo umount /dev/sda1
 sudo mkfs.btrfs -f /dev/sda1 # Don't forget to backup your data!
 sudo mount /dev/sda1 /mnt/sda1
 sudo sh -c 'echo "/dev/sda1 /mnt/sda1 btrfs defaults 0 2" >> /etc/fstab'
@@ -60,7 +61,7 @@ sudo sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/
 sudo sed -i "s/#Port 22/Port ${random_port}/" /etc/ssh/sshd_config
 sudo systemctl enable sshd.service
 
-## Congure firewalld
+## Configure firewalld
 sudo systemctl enable firewalld.service
 sudo systemctl start firewalld.service
 sudo firewall-cmd --zone=public --add-port=${random_port}/tcp --permanent
@@ -70,23 +71,43 @@ done
 sudo firewall-cmd --reload
 
 #==============================================================================
-# SECTION 4: Immich preparation
+# SECTION 4: Duck DNS Configuration
+#==============================================================================
+
+## Set Duck DNS domain and token
+read -p "Enter your Duck DNS domain: " duck_domain
+read -p "Enter your Duck DNS token: " duck_token
+echo
+
+## Configure Duck DNS
+mkdir -p ~/server/duckdns
+mkdir -p ~/.cache/crontab
+sudo chown -R $(whoami) ~/server
+echo "echo url=\"https://www.duckdns.org/update?domains=${duck_domain}&token=${duck_token}&verbose=true\" | curl -k -o /home/enrique/server/duckdns/duck.log -K -" > home/enrique/server/duckdns/duck.sh # Change home directory
+chmod 700 ~/server/duckdns/duck.sh
+echo "*/5 * * * * ~/server/duckdns/duck.sh >/dev/null 2>&1" | crontab -
+sudo systemctl enable cronie.service
+~/server/duckdns/duck.sh
+
+#==============================================================================
+# SECTION 5: Immich preparation
 #==============================================================================
 
 ## Set password for immich database
-mkdir ~/Server/immich
+mkdir ~/server/immich
 read -s -p "Enter your Immich database password: " DB_PASSWORD
+echo
 
 ## Create environment file
-cat > ~/Server/immich/.env << EOF ## Change every /home/enrique* to your user's home directory
+cat > ~/server/immich/.env << EOF ## Replace enrique with your own home directory
 # You can find documentation for all the supported env variables at https://immich.app/docs/install/environment-variables
 
 # The location where your uploaded files are stored
-UPLOAD_LOCATION=/home/enrique/Server/immich/library
+UPLOAD_LOCATION=/home/enrique/server/immich/library
 # The location where your database files are stored
-DB_DATA_LOCATION=/home/enrique/Server/immich/postgres
+DB_DATA_LOCATION=/home/enrique/server/immich/postgres
 
-# To set a timezone, uncomment the next line and change Etc/UTC to a TZ identifier from this list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List
+# To set a timezone, uncomment the next line and change Etc/U TC to a TZ identifier from this list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List
 # TZ=Etc/UTC
 
 # The Immich version to use. You can pin this to a specific version like "v1.71.0"
@@ -103,40 +124,20 @@ DB_DATABASE_NAME=immich
 EOF
 
 ## Download hardware acceleration files
-curl -L -o ~/Server/immich/hwaccel.transcoding.yml https://github.com/immich-app/immich/releases/latest/download/hwaccel.transcoding.yml
-curl -L -o ~/Server/immich/hwaccel.ml.yml https://github.com/immich-app/immich/releases/latest/download/hwaccel.ml.yml
+curl -L -o ~/server/immich/hwaccel.transcoding.yml https://github.com/immich-app/immich/releases/latest/download/hwaccel.transcoding.yml
+curl -L -o ~/server/immich/hwaccel.ml.yml https://github.com/immich-app/immich/releases/latest/download/hwaccel.ml.yml
+sudo chown -R $(whoami) ~/server
 
 #==============================================================================
-# SECTION 5: Docker configuration
+# SECTION 6: Docker configuration
 #==============================================================================
 
 ## Start Docker
 sudo systemctl enable docker.service
 sudo systemctl start docker.service
 
-## Set Duck DNS domain and token
-read -p "Enter your Duck DNS domain: " duck_domain
-read -p "Enter your Duck DNS token: " duck_token
-
 ## Create docker-compose file
-cat > ~/Server/immich/docker-compose.yml << 'EOF'
-services:
-  duckdns:
-    image: lscr.io/linuxserver/duckdns:latest
-    container_name: duckdns
-    network_mode: host # Optional
-    environment:
-      - PUID=1000 #optional
-      - PGID=1000 #optional
-      - TZ=Etc/UTC #optional
-      - SUBDOMAINS=${duck_domain}
-      - TOKEN=${duck_token}
-      - UPDATE_IP=ipv4 # Optional
-      - LOG_FILE=false # Optional
-    volumes:
-      - /path/to/duckdns/config:/config # Optional
-    restart: unless-stopped
----
+cat > ~/server/immich/docker-compose.yml << 'EOF'
 services:
   homarr:
     image: ghcr.io/ajnart/homarr:latest
@@ -146,9 +147,9 @@ services:
       - PGID=1000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
-      - /home/enrique/Server/homarr/configs:/app/data/configs
-      - /home/enrique/Server/homarr/icons:/app/public/icons
-      - /home/enrique/Server/homarr/data:/data
+      - /home/enrique/server/homarr/configs:/app/data/configs
+      - /home/enrique/server/homarr/icons:/app/public/icons
+      - /home/enrique/server/homarr/data:/data
     ports:
       - 7575:7575
     restart: unless-stopped
@@ -177,7 +178,7 @@ services:
     image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}-openvino
     container_name: immich_machine_learning
     volumes:
-      - /home/enrique/Server/immich/model-cache:/cache
+      - /home/enrique/server/immich/model-cache:/cache
     restart: unless-stopped
     extends:
       file: hwaccel.ml.yml
@@ -222,7 +223,7 @@ services:
       - TZ=Etc/UTC
       - JELLYFIN_PublishedServerUrl=http://192.168.0.5
     volumes:
-      - /home/enrique/Server/jellyfin/library:/config
+      - /home/enrique/server/jellyfin/library:/config
       - /mnt/sda1/Filme:/data/movies # Change directory if you are using RAID
       - /mnt/sda1/Musik:/data/music # Change directory if you are using RAID
     ports:
@@ -240,8 +241,8 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - /home/enrique/Server/makemkv/docker/appdata/makemkv:/config:rw
-      - /home/enrique/Server/makemkv:/storage:ro
+      - /home/enrique/server/makemkv/docker/appdata/makemkv:/config:rw
+      - /home/enrique/server/makemkv:/storage:ro
       - /mnt/sda1:/output:rw # Change directory if you are using RAID
     ports:
       - 5800:5800
@@ -259,8 +260,8 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - /home/enrique/Server/nextcloud/config:/config
-      - /home/enrique/Server/nextcloud/data:/data
+      - /home/enrique/server/nextcloud/config:/config
+      - /home/enrique/server/nextcloud/data:/data
     ports:
       - 443:443
     restart: unless-stopped
@@ -273,8 +274,8 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - /home/enrique/Server/nginx-proxy-manager/data:/data
-      - /home/enrique/Server/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+      - /home/enrique/server/nginx-proxy-manager/data:/data
+      - /home/enrique/server/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
     ports:
       - 90:90 # Changed it to avoid conflict with Vaultwarden
       - 81:81
@@ -289,7 +290,7 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-        - /home/enrique/Server/portainer/data:/data
+        - /home/enrique/server/portainer/data:/data
         - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - 9443:9443
@@ -304,7 +305,7 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - /home/enrique/Server/radarr/data:/config
+      - /home/enrique/server/radarr/data:/config
       - /mnt/sda1/Filme:/movies
       - /mnt/sda1:/downloads
     ports:
@@ -320,9 +321,9 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - /home/enrique/Server/sabnzbd/config:/config
+      - /home/enrique/server/sabnzbd/config:/config
       - /mnt/sda1:/downloads
-      - /mnt/sda1/sabnzbd/incomplete:/incomplete-downloads
+      - /mnt/sda1/incomplete:/incomplete-downloads
     ports:
       - 8080:8080
     restart: unless-stopped
@@ -335,7 +336,7 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - /home/enrique/Server/vaultwarden/vw-data:/data
+      - /home/enrique/server/vaultwarden/vw-data:/data
     ports:
       - 80:80
     restart: unless-stopped
@@ -353,22 +354,23 @@ services:
 EOF
 
 ## Run docker-compose file
-sudo docker compose -f ~/Server/immich/docker-compose.yml up -d
+sudo docker compose -f ~/server/immich/docker-compose.yml up -d
 
 #==============================================================================
-# SECTION 6: Backup creation
+# SECTION 7: Backup creation
 #==============================================================================
 
 ## Setup backup
+mkdir /mnt/sda1/server # Change directory if you are using RAID
 sudo chown -R $(whoami) /mnt/sda1 # Change directory if you are using RAID
-echo "rsync -avh --delete ~/Server /mnt/sda1/" > ~/Server/server_backup.sh # Change directory if you are using RAID
-chmod +x ~/Server/server_backup.sh
-(crontab -l 2>/dev/null; echo "0 3 * * * ~/Server/server_backup.sh") | crontab -
-sudo chown -R $(whoami) ~/Server
-~/Server/server_backup.sh
+echo "rsync -avh --delete --exclude=~/server/immich/postgres ~/ /mnt/sda1/server" > ~/server/server_backup.sh
+chmod 700 ~/server/server_backup.sh
+(crontab -l 2>/dev/null; echo "0 3 * * * ~/server/server_backup.sh") | crontab -
+sudo chown -R $(whoami) ~/server
+~/server/server_backup.sh
 
 #==============================================================================
-# SECTION 7: Cleanup
+# SECTION 8: Cleanup
 #==============================================================================
 
 ## Remove unnecessary files
